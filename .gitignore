@@ -3,4 +3,5 @@ config.py
 API_YOUTUBE/
 __pycache__/
 utils/__pycache__/
+pyvenv.cfg
 *
