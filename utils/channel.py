@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 #from config import youtube_api
 
 
-class Channel():
+class Channel:
     #api_key = youtube_api
     # YT_API_KEY скопирован из гугла и вставлен в переменные окружения
     api_key: str = os.getenv('youtube')
@@ -16,7 +16,8 @@ class Channel():
 
     def get_json_by_id(self):
         # создать специальный объект для работы с API
-        with build('youtube', 'v3', developerKey=Channel.api_key) as youtube:
+        youtube_api = build('youtube', 'v3', developerKey=os.getenv('youtube'))
+        with youtube_api as youtube:
             channel = youtube.channels().list(id=self.id, part='snippet,statistics').execute()
             self.json = json.dumps(channel, indent=2, ensure_ascii=False)
 
