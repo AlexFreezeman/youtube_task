@@ -1,31 +1,46 @@
 import json
 import os
 from googleapiclient.discovery import build
-#from config import youtube_api
+from utils.config import api_key
 
 
 class Channel:
-    #api_key = youtube_api
+    # api_key = youtube_api
     # YT_API_KEY скопирован из гугла и вставлен в переменные окружения
     api_key: str = os.getenv('youtube')
 
     def __init__(self, id):
-        self.id = id
+        self.__id = id
         self.json = ""
-        self.get_json_by_id()
+        self.get_json()
+        self.title = self.json["items"][0]['snippet']['title']
+        self.channel_description = self.json["items"][0]['snippet']['description']
+        self.url = r"https://www.youtube.com/channel/" + self.__id
+        self.video_count = self.json["items"][0]["statistics"]["videoCount"]
+        self.channel_number_of_views = self.json["items"][0]["statistics"]["viewCount"]
 
-    def get_json_by_id(self):
-        # создать специальный объект для работы с API
-        youtube_api = build('youtube', 'v3', developerKey=os.getenv('youtube'))
-        with youtube_api as youtube:
-            channel = youtube.channels().list(id=self.id, part='snippet,statistics').execute()
-            self.json = json.dumps(channel, indent=2, ensure_ascii=False)
+    def get_json(self):
+        #        youtube_api = build('youtube', 'v3', developerKey=os.getenv('youtube'))
+        #        with youtube_api as youtube:
+        #            channel = youtube.channels().list(id=self.id, part='snippet,statistics').execute()
+        #            self.json = json.dumps(channel, indent=2, ensure_ascii=False)
+        channel = self.get_service().channels().list(id=self.__id, part="snippet,statistics").execute()
+        self.json = channel
 
-    def __repr__(self):
-        text = ""
+    def save_json(self, path):
+        text = "["
         for dic in self.__dict__:
-            text += dic + "=" + str(self.__dict__[dic]) + ", "
-        return text[:-2]
+            if dic != 'json':
+                text += "{'" + str(dic) + "':'" + str(self.__dict__[dic]) + "'}, \n"
+        json_text = text[:-3] + "]"
+        with open(path, "w", encoding="UTF-8") as file:
+            file.write(str(json_text))
 
     def print_info(self):
         print(self.json)
+
+    @classmethod
+    def get_service(cls):
+        #        youtube_api = build('youtube', 'v3', developerKey=os.getenv('youtube'))
+        with build('youtube', 'v3', developerKey=cls.api_key) as youtube_api:
+            return youtube_api

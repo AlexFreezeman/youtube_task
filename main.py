@@ -10,8 +10,22 @@ def main():
     channel.print_info()
 
     vdud = Channel('UCMCgOm8GZkHp8zJ6l7_hIuA')
-    vdud.print_info()
+#    vdud.print_info()
+    print(vdud.title)
+    print(vdud.video_count)
+    print(vdud.url)
 
+    # менять не можем --- на самом деле можем, как починить? добавляется в json в конце
+    vdud.__id = 'Новое название'
+    print(vdud.__id)
+
+    # можем получить объект для работы с API вне класса
+    print(Channel.get_service())
+    #print(vdud.get_service())
+
+
+    # создать файл 'vdud.json' в данными по каналу
+    vdud.save_json('vdud.json')
 
 
 if __name__ == "__main__":
