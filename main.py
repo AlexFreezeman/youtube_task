@@ -16,8 +16,8 @@ def main():
     print(vdud.url)
 
     # менять не можем --- на самом деле можем, как починить? добавляется в json в конце
-    vdud.__id = 'Новое название'
-    print(vdud.__id)
+    vdud.channel_id = 'Новое название'
+    print(vdud.channel_id)
 
     # можем получить объект для работы с API вне класса
     print(Channel.get_service())
