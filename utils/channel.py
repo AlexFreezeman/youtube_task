@@ -9,15 +9,16 @@ class Channel:
     # YT_API_KEY скопирован из гугла и вставлен в переменные окружения
     api_key: str = os.getenv('youtube')
 
-    def __init__(self, channel_id):
+    def __init__(self, channel_id) -> None:
         self.__channel_id = channel_id
         self.json = ""
         self.get_json()
         self.title = self.json["items"][0]['snippet']['title']
-        self.channel_description = self.json["items"][0]['snippet']['description']
+        self.ch_description = self.json["items"][0]['snippet']['description']
         self.url = r"https://www.youtube.com/channel/" + self.__channel_id
         self.video_count = self.json["items"][0]["statistics"]["videoCount"]
-        self.channel_number_of_views = self.json["items"][0]["statistics"]["viewCount"]
+        self.view_count = self.json["items"][0]["statistics"]["viewCount"]
+        self.sub_count = self.json["items"][0]["statistics"]["subscriberCount"]
 
     def get_json(self):
         #        youtube_api = build('youtube', 'v3', developerKey=os.getenv('youtube'))
@@ -27,7 +28,7 @@ class Channel:
         channel = self.get_service().channels().list(id=self.__channel_id, part="snippet,statistics").execute()
         self.json = channel
 
-    def save_json(self, path):
+    def save_json(self, path) -> None:
         text = "["
         for dic in self.__dict__:
             if dic != 'json':
@@ -36,7 +37,7 @@ class Channel:
         with open(path, "w", encoding="UTF-8") as file:
             file.write(str(json_text))
 
-    def print_info(self):
+    def print_info(self) -> str:
         print(self.json)
 
     @classmethod
@@ -54,3 +55,18 @@ class Channel:
         if self.channel_id != channel_id:
             raise AttributeError(f"property 'channel_id' of 'Channel' object has no setter")
         self.__channel_id = channel_id
+
+    def __str__(self) -> str:
+        return "Youtube-канал: " + self.title
+
+    def __eq__(self, other) -> bool:
+        return int(self.sub_count) == int(other.sub_count)
+
+    def __lt__(self, other) -> bool:
+        return int(self.sub_count) < int(other.sub_count)
+
+    def __gt__(self, other) -> bool:
+        return int(self.sub_count) > int(other.sub_count)
+
+    def __add__(self, other) -> int:
+        return int(self.sub_count) + int(other.sub_count)
